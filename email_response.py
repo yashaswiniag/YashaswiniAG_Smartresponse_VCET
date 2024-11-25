@@ -2,44 +2,51 @@ import openai
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import json
 
 # Replace with your OpenAI API key
-openai.api_base="https://openrouter.ai/api/v1"
-openai.api_key = "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"
+openai.api_base = "https://api.openai.com/v1"
+openai.api_key = ""
 
 # Replace with your email credentials
 SMTP_SERVER = "smtp.gmail.com"  # For Gmail
 SMTP_PORT = 587
 EMAIL_ADDRESS = "yashaswiniag29@gmail.com"
-EMAIL_PASSWORD = "updk eioi dbrq xpaj"
+EMAIL_PASSWORD = ""
 
-def generate_email_response(client_input):
+# Path to feedback storage file
+FEEDBACK_FILE = "feedback.json"
+
+def load_feedback():
+    """Load stored feedback from a file."""
+    try:
+        with open(FEEDBACK_FILE, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+def save_feedback(feedback_data):
+    """Save feedback to the feedback file."""
+    with open(FEEDBACK_FILE, "w") as f:
+        json.dump(feedback_data, f, indent=4)
+
+def generate_email_response(client_input, feedback=None):
     """
     Generate a professional and human-like email response using OpenAI's GPT API.
     """
     # Crafting the prompt for OpenAI
-    prompt = f"""
-    You are a project manager responding to a client's query. The client has requested an estimated cost and timeline 
-    for their large project based on initial requirements provided. Your email should be professional, polite, and 
-    concise, avoiding overused phrases like 'I hope this email finds you well.' Focus on providing a clear and 
-    informative response.
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant that writes professional emails."},
+        {"role": "user", "content": f"The client has requested an estimated cost and timeline for their project:\n\n{client_input}\n\nGenerate a professional response. {feedback if feedback else ''}"},
+    ]
 
-    Client's Input:
-    {client_input}
-
-    Please generate a professional email response.
-    """
-    
     try:
-        # Call OpenAI's GPT API
+        # Call OpenAI's Chat API
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that writes professional emails."},
-                {"role": "user", "content": prompt},
-            ],
+            model="gpt-4",  # or "gpt-4" if you prefer
+            messages=messages,
             max_tokens=250,
-            temperature=0.7
+            temperature=0.7,
         )
 
         # Extract the content from the response
@@ -70,6 +77,11 @@ def send_email(to_email, subject, body):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
+def request_feedback():
+    """Request feedback from the client."""
+    feedback = input("Please provide feedback on the email response: ")
+    return feedback
+
 # Main script
 if __name__ == "__main__":
     # Client's input (example provided in the scenario)
@@ -88,3 +100,15 @@ if __name__ == "__main__":
 
     # Send the email
     send_email(recipient_email, email_subject, email_body)
+
+    # Request feedback from the user
+    feedback = request_feedback()
+
+    # Save feedback to a file
+    feedback_data = load_feedback()
+    feedback_data.append({
+        "client": recipient_email,
+        "feedback": feedback
+    })
+    save_feedback(feedback_data)
+
