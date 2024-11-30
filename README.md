@@ -22,51 +22,47 @@ Installation Instructions
 Follow these steps to set up the environment:
 
 Clone the Repository:
-   ```bash
+  
    git clone https://github.com/your-repository-link.git
    cd STUDENTNAME_TASKNAME_COLLEGENAME
 
 Create a Virtual Environment :
 
-bash
-Copy code
+
 python -m venv venv
-source venv/bin/activate   # On Windows: venv\Scripts\activate
+source  On Windows: venv\Scripts\activate
 Install Required Libraries: Run the following command to install dependencies:
 
-bash
-Copy code
+
 pip install -r requirements.txt
 Example requirements.txt:
 
 makefile
-Copy code
+
 openai==0.27.0
 Set Up API Keys: Replace placeholders in email_response.py:
 
 python
-Copy code
+
 openai.api_key = "your_openai_api_key"
 EMAIL_PASSWORD = "your_app_password"
 Configure Email Credentials: Use Gmail's App Password for secure email access. Follow the guide here to generate an app password.
 
 Running Instructions
-Run the Script:
 
-bash
-Copy code
+Run the Script:
 python email_response.py
 Example Inputs: Use the following client query as input:
 
-plaintext
-Copy code
+
+
 We are planning to develop a cloud-based inventory management system with real-time tracking, advanced analytics, and user-friendly dashboards. We aim to have it ready within six months. Can you provide an estimated cost and timeline for this project?
 Expected Outputs:
 
 An email with a professionally written response will be sent to the recipient email.
 Example response:
-plaintext
-Copy code
+
+
 Subject: Estimated Cost and Timeline for Your Project
 
 Dear Client,
